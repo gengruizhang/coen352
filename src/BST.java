@@ -16,71 +16,74 @@ public class BST {
         root = null;
     }
 
-    public Node search(int key) {
+    public Node bstSearch(int key) {
         return treeSearch(root, key);
     }
 
-    private Node treeSearch(Node node, int key) {
-        if (node == null || node.key == key) {
-            return node;
+    private Node treeSearch(Node x, int key) {
+        if (x == null || x.key == key) {
+            return x;
         }
-        if (key < node.key) {
-            return treeSearch(node.left, key);
+        if (key < x.key) {
+            return treeSearch(x.left, key);
         } else {
-            return treeSearch(node.right, key);
+            return treeSearch(x.right, key);
         }
     }
 
-    public Node min(Node node) {
-        while (node.left != null) {
-            node = node.left;
+    public Node min(Node x) {
+        while (x.left != null) {
+            x = x.left;
         }
-        return node;
+        return x;
     }
 
-    public Node max(Node node) {
-        while (node.right != null) {
-            node = node.right;
+    public Node max(Node x) {
+        while (x.right != null) {
+            x = x.right;
         }
-        return node;
+        return x;
     }
 
-    public Node treeSuccessor(Node node) {
-        if (node.right != null) {
-            return min(node.right);
+    public Node treeSuccessor(Node x) {
+        if (x.right != null) {
+            return min(x.right);
         }
-        Node parent = node.p;
-        while (parent != null && node == parent.right) {
-            node = parent;
-            parent = parent.p;
+        Node y = x.p; // y is x's parent
+        while (y != null && x == y.right) {
+            x = y;
+            y = y.p;
         }
-        return parent;
+        return y;
     }
 
-    public Node treeInsert(int key) {
-        Node newNode = new Node(key);
-        Node parent = null;
-        Node current = root;
+    public Node bstInsert(int key) {
+        return treeInsert(root, key);
+    }
 
-        while (current != null) {
-            parent = current;
-            if (newNode.key < current.key) {
-                current = current.left;
+    public Node treeInsert(Node x, int key) {
+        Node z = new Node(key);
+        Node y = null;
+
+        while (x != null) {
+            y = x;
+            if (z.key < x.key) {
+                x = x.left;
             } else {
-                current = current.right;
+                x = x.right;
             }
         }
 
-        newNode.p = parent;
-        if (parent == null) {
-            root = newNode;
-        } else if (newNode.key < parent.key) {
-            parent.left = newNode;
+        z.p = y;
+        if (y == null) {
+            root = z;
+        } else if (z.key < y.key) {
+            y.left = z;
         } else {
-            parent.right = newNode;
+            y.right = z;
         }
 
-        return newNode;
+        return z;
     }
 
     private void transplant(Node u, Node v) {
@@ -96,21 +99,21 @@ public class BST {
         }
     }
 
-    public void treeDelete(Node node) {
-        if (node.left == null) {
-            transplant(node, node.right);
-        } else if (node.right == null) {
-            transplant(node, node.left);
+    public void treeDelete(Node z) {
+        if (z.left == null) {
+            transplant(z, z.right);
+        } else if (z.right == null) {
+            transplant(z, z.left);
         } else {
-            Node successor = min(node.right);
-            if (successor.p != node) {
-                transplant(successor, successor.right);
-                successor.right = node.right;
-                successor.right.p = successor;
+            Node y = min(z.right); // y is z's successor
+            if (y.p != z) {
+                transplant(y, y.right);
+                y.right = z.right;
+                y.right.p = y;
             }
-            transplant(node, successor);
-            successor.left = node.left;
-            successor.left.p = successor;
+            transplant(z, y);
+            y.left = z.left;
+            y.left.p = y;
         }
     }
 
@@ -119,26 +122,26 @@ public class BST {
         System.out.println();
     }
 
-    public void inorderWalk(Node node) {
-        if (node != null) {
-            inorderWalk(node.left);
-            System.out.print(node.key + " ");
-            inorderWalk(node.right);
+    public void inorderWalk(Node x) {
+        if (x != null) {
+            inorderWalk(x.left);
+            System.out.print(x.key + " ");
+            inorderWalk(x.right);
         }
     }
 
     public static void main(String[] args) {
         BST bst = new BST();
 
-        bst.treeInsert(15);
-        bst.treeInsert(6);
-        bst.treeInsert(18);
-        bst.treeInsert(3);
-        bst.treeInsert(7);
-        bst.treeInsert(17);
-        bst.treeInsert(20);
-        bst.treeInsert(2);
-        bst.treeInsert(4);
+        bst.bstInsert(15);
+        bst.bstInsert(6);
+        bst.bstInsert(18);
+        bst.bstInsert(3);
+        bst.bstInsert(7);
+        bst.bstInsert(17);
+        bst.bstInsert(20);
+        bst.bstInsert(2);
+        bst.bstInsert(4);
 
         // Inorder traversal
         System.out.print("Inorder walk: ");
@@ -146,7 +149,7 @@ public class BST {
 
         // Search for a key
         int key = 7;
-        Node foundNode = bst.search(key);
+        Node foundNode = bst.bstSearch(key);
         System.out.println("Search for " + key + ": " + (foundNode != null ? "Found" : "Not Found"));
 
         // Find the minimum and maximum elements
@@ -154,10 +157,10 @@ public class BST {
         System.out.println("Max: " + bst.max(bst.root).key);
 
         // Find the successor of a given node
-        System.out.println("Successor of 15: " + (bst.treeSuccessor(bst.search(15)).key));
+        System.out.println("Successor of 15: " + (bst.treeSuccessor(bst.bstSearch(15)).key));
 
         // Delete a node
-        bst.treeDelete(bst.search(6));
+        bst.treeDelete(bst.bstSearch(6));
         System.out.println("Inorder walk after deleting 6: ");
         bst.inorderWalk();
     }
