@@ -86,7 +86,7 @@ public class BST {
         return z;
     }
 
-    private void transplant(Node u, Node v) {
+    public void transplant(Node u, Node v) {
         if (u.p == null) {
             root = v;
         } else if (u == u.p.left) {
