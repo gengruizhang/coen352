@@ -115,13 +115,33 @@ public class AVL extends BST {
             return;
         }
 
-        treeDelete(z);
+        treeDeleteAndUpdateHeight(z);
 
-        Node y = z.p;
+        Node y = (z.p != null) ? z.p : root;
+
         while (y != null) {
             updateHeight(y);
             y = rebalance(y);
             y = y.p;  // Move up to rebalance
+        }
+    }
+
+    public void treeDeleteAndUpdateHeight(Node z) {
+        if (z.left == null) {
+            transplant(z, z.right);
+        } else if (z.right == null) {
+            transplant(z, z.left);
+        } else {
+            Node y = min(z.right);  // y is the successor of z
+            if (y.p != z) {
+                transplant(y, y.right);
+                y.right = z.right;
+                y.right.p = y;
+            }
+            transplant(z, y);
+            y.left = z.left;
+            y.left.p = y;
+            updateHeight(y);  // Update y's height
         }
     }
 
