@@ -133,14 +133,23 @@ public class AVL extends BST {
             transplant(z, z.left);
         } else {
             Node y = min(z.right);  // y is the successor of z
+            Node yp = null;
             if (y.p != z) {
                 transplant(y, y.right);
+                yp = y.p;
                 y.right = z.right;
                 y.right.p = y;
             }
             transplant(z, y);
             y.left = z.left;
             y.left.p = y;
+
+            while(yp != null) {
+                updateHeight(yp);
+                yp = rebalance(yp);
+                yp = yp.p;
+            }
+
             updateHeight(y);  // Update y's height
         }
     }
